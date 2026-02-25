@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+  STUDENT
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  domain      String   @unique
+  users       User[]
+  departments Department[]
+  categories  Category[]
+  complaints  Complaint[]
+  createdAt   DateTime @default(now())
+}
+
+model Department {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name           String
+  users          User[]
+  categories     Category[]
+  complaints     Complaint[]
+}
+
+model Category {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name           String
+  departmentId   String
+  department     Department @relation(fields: [departmentId], references: [id])
+  complaints     Complaint[]
+}
+
+model User {
+  id              String    @id @default(uuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  name            String
+  email           String    @unique
+  password        String
+  role            Role
+  departmentId    String?
+  department      Department? @relation(fields: [departmentId], references: [id])
+  complaints      Complaint[] @relation("CreatedComplaints")
+  assignedTickets Complaint[] @relation("AssignedComplaints")
+  notifications   Notification[]
+  complaintStatusLogsChanged ComplaintStatusLog[] @relation("UserChangedLogs")
+  createdAt       DateTime @default(now())
+}
+
+model Complaint {
+  id              String   @id @default(uuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  title           String
+  description     String
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id])
+  departmentId    String
+  department      Department @relation(fields: [departmentId], references: [id])
+  createdById     String
+  createdBy       User @relation("CreatedComplaints", fields: [createdById], references: [id])
+  assignedToId    String?
+  assignedTo      User? @relation("AssignedComplaints", fields: [assignedToId], references: [id])
+  status          ComplaintStatus @default(OPEN)
+  priority        Priority @default(MEDIUM)
+  dueDate         DateTime?
+  firstResponseAt DateTime?
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+  rating          Int?
+  feedback        String?
+  attachments     String[]
+  statusLogs      ComplaintStatusLog[]
+  createdAt       DateTime @default(now())
+}
+
+model ComplaintStatusLog {
+  id           String   @id @default(uuid())
+  complaintId  String
+  complaint    Complaint @relation(fields: [complaintId], references: [id])
+  oldStatus    ComplaintStatus
+  newStatus    ComplaintStatus
+  changedById  String
+  changedBy    User @relation("UserChangedLogs", fields: [changedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean @default(false)
+  createdAt DateTime @default(now())
+}
