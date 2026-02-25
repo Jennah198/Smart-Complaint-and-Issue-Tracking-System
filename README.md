@@ -1,98 +1,151 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ASTU Smart Complaint & Issue Tracking System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Project Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The **ASTU Smart Complaint & Issue Tracking System** is a web-based platform designed to help students, staff, and administrators manage campus-related complaints efficiently. The system ensures transparency, structured workflow, and accountability in handling issues such as dormitory maintenance, laboratory equipment problems, internet connectivity issues, and classroom facility damage.
 
-## Description
+This project uses a modern **MERN/NestJS + Prisma + PostgreSQL stack** with TypeScript, AI-assisted guidance, and multi-tenant support.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Features
 
-```bash
-$ npm install
+### Student
+
+- Submit complaints via categorized forms
+- Upload files/images with each complaint
+- Track complaint status (Open → In Progress → Resolved)
+- View complaint history
+- AI chatbot assistance (FAQ & guidance)
+- Rate resolution quality
+
+### Department Staff
+
+- View complaints assigned to their department
+- Update ticket status and add remarks
+- Track resolution workflow
+
+### Administrator
+
+- Manage all complaints and users
+- Create and manage categories and departments
+- Monitor system metrics via analytics dashboard:
+  - Total complaints
+  - Complaints per category
+  - Resolution rate
+  - Average resolution time
+  - Open vs Closed ratio
+- Receive notifications of new or updated tickets
+
+---
+
+## Tech Stack
+
+- **Backend**: NestJS + TypeScript
+- **Database**: PostgreSQL
+- **ORM**: Prisma 7 with `@prisma/adapter-pg`
+- **AI Assistance**: API-based chatbot with category suggestions and FAQ
+- **File Storage**: Cloudinary (or local server as fallback)
+- **Authentication**: JWT + refresh token rotation
+- **Notifications**: In-app (DB-stored) + email (Nodemailer)
+
+---
+
+## Project Structure
+
+astu-smart-complaint-backend/
+│
+├── src/
+│ ├── prisma/ # PrismaService & client
+│ ├── auth/ # Authentication module
+│ ├── users/ # User module
+│ ├── complaints/ # Complaint module
+│ ├── notifications/ # Notification module
+│ ├── app.controller.ts # Test and health endpoints
+│ └── main.ts # Application bootstrap
+│
+├── prisma/
+│ ├── schema.prisma # Prisma schema definitions
+│ └── prisma.config.ts # Prisma 7 config with adapter
+│
+├── .env # Environment variables
+├── tsconfig.json # TypeScript config
+├── package.json
+└── README.md
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following:
+
+```env
+DATABASE_URL=postgresql://USERNAME:PASSWORD@localhost:5432/astu_smart_complaint
+PORT=5000
+JWT_SECRET=your_jwt_secret
+Installation & Setup
+
+Clone the repository:
+
+git clone https://github.com/Jennah198/Smart-Complaint-and-Issue-Tracking-System.git
+cd astu-smart-complaint-backend
+
+Install dependencies:
+
+npm install
+
+Generate Prisma client:
+
+npx prisma generate
+
+Run database migrations:
+
+npx prisma migrate dev --name init
+
+Start the development server:
+
+npm run start:dev
+
+Test endpoints:
+
+Health check: http://localhost:5000/health
+
+Users test: http://localhost:5000/users-test
+
+Usage
+
+Access the API via Postman or frontend application.
+
+Create users and complaints to test workflows.
+
+Admin can view analytics dashboards and metrics.
+
+AI chatbot assists students with FAQ and category suggestions.
+
+Contribution
+
+Fork the repo, create a feature branch, commit your changes, and open a pull request.
+
+Ensure all migrations and Prisma clients are up to date.
+
+Use TypeScript and follow NestJS module conventions.
+
+Future Enhancements
+
+Full frontend integration (Next.js + TypeScript)
+
+Real-time notifications (WebSockets)
+
+SLA auto-escalation for unresolved tickets
+
+AI-based complaint categorization improvements
+
+Multi-tenant support for multiple organizations
+
+License
+
+This project is licensed under the MIT License.
+
+Author: Nezira Workuali
+GitHub: Jennah198
 ```
-
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
