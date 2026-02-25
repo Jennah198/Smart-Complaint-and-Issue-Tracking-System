@@ -1,5 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -10,17 +12,35 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new UnauthorizedException('Invalid credentials');
-    return user;
+  async register(dto: RegisterDto) {
+    const hashed = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        email: dto.email,
+        password: hashed,
+        role: dto.role || 'STUDENT',
+      },
+    });
+
+    const token = this.generateToken(user.id, user.role);
+    return { user, token };
   }
 
-  async login(user: any) {
-    const payload = { sub: user.id, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
-    return { accessToken };
+  async login(dto: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const valid = await bcrypt.compare(dto.password, user.password);
+    if (!valid) throw new UnauthorizedException('Invalid credentials');
+
+    const token = this.generateToken(user.id, user.role);
+    return { user, token };
+  }
+
+  private generateToken(userId: string, role: string) {
+    return this.jwtService.sign({ sub: userId, role });
   }
 }
