@@ -68,4 +68,16 @@ export class ComplaintService {
       },
     });
   }
+
+  async getAllComplaints() {
+    return this.prisma.complaint.findMany({
+      include: {
+        category: true,
+        department: true,
+        createdBy: true,
+        assignedTo: true,
+        statusLogs: true,
+      },
+    });
+  }
 }
