@@ -2,29 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { ComplaintStatus, Priority } from '@prisma/client';
 
 @Injectable()
 export class ComplaintService {
   constructor(private prisma: PrismaService) {}
 
-  async createComplaint(studentId: string, dto: CreateComplaintDto) {
+  async createComplaint(userId: string, dto: CreateComplaintDto) {
     const complaint = await this.prisma.complaint.create({
       data: {
         title: dto.title,
         description: dto.description,
-        category: dto.category,
-        studentId,
-        status: 'OPEN',
+        organizationId: dto.organizationId,
+        categoryId: dto.categoryId,
+        departmentId: dto.departmentId,
+        createdById: userId,
+        priority: dto.priority ?? Priority.MEDIUM,
+        attachments: dto.attachments ?? [],
+        status: ComplaintStatus.OPEN,
       },
     });
 
-    // Create initial status log
     await this.prisma.complaintStatusLog.create({
       data: {
         complaintId: complaint.id,
-        oldStatus: '',
-        newStatus: 'OPEN',
-        changedById: studentId,
+        changedById: userId,
       },
     });
 
@@ -36,27 +38,34 @@ export class ComplaintService {
     changedById: string,
     dto: UpdateStatusDto,
   ) {
-    const complaint = await this.prisma.complaint.update({
+    const updated = await this.prisma.complaint.update({
       where: { id: complaintId },
-      data: { status: dto.newStatus },
+      data: {
+        status: dto.newStatus as ComplaintStatus,
+      },
     });
 
     await this.prisma.complaintStatusLog.create({
       data: {
         complaintId,
-        oldStatus: complaint.status,
-        newStatus: dto.newStatus,
         changedById,
       },
     });
 
-    return complaint;
+    return updated;
   }
 
-  async getStudentComplaints(studentId: string) {
+  async getMyComplaints(userId: string) {
     return this.prisma.complaint.findMany({
-      where: { studentId },
-      include: { statusLogs: true, assignedTo: true },
+      where: {
+        createdById: userId,
+      },
+      include: {
+        statusLogs: true,
+        category: true,
+        department: true,
+        assignedTo: true,
+      },
     });
   }
 }

@@ -39,6 +39,6 @@ export class ComplaintController {
   @Get('my')
   @Roles('STUDENT')
   getMyComplaints(@Req() req) {
-    return this.complaintService.getStudentComplaints(req.user.id);
+    return this.complaintService.getMyComplaints(req.user.id);
   }
 }

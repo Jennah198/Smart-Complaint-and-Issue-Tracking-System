@@ -1,17 +1,28 @@
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+import { Priority } from '@prisma/client';
 
 export class CreateComplaintDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
   title: string;
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(1000)
   description: string;
 
   @IsString()
-  @IsNotEmpty()
-  category: string;
+  organizationId: string;
+
+  @IsString()
+  categoryId: string;
+
+  @IsString()
+  departmentId: string;
+
+  @IsOptional()
+  priority?: Priority;
+
+  @IsOptional()
+  @IsArray()
+  attachments?: string[];
 }
