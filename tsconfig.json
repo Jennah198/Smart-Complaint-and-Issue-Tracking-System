@@ -20,5 +20,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
+  },
+  "prisma": {
+    "seed": "tsx ./prisma/seed.ts"
   }
 }

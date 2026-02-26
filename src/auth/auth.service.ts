@@ -43,4 +43,28 @@ export class AuthService {
   private generateToken(userId: string, role: string) {
     return this.jwtService.sign({ sub: userId, role });
   }
+
+  async createAdmin(email: string, password: string) {
+    const hashed = await bcrypt.hash(password, 10);
+    return this.prisma.user.create({
+      data: {
+        email,
+        password: hashed,
+        role: 'ADMIN',
+        name: 'Admin User',
+      },
+    });
+  }
+
+  async createStaff(email: string, password: string) {
+    const hashed = await bcrypt.hash(password, 10);
+    return this.prisma.user.create({
+      data: {
+        email,
+        password: hashed,
+        role: 'STAFF',
+        name: 'Staff User',
+      },
+    });
+  }
 }
