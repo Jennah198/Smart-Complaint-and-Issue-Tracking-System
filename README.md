@@ -142,10 +142,3 @@ AI-based complaint categorization improvements
 
 Multi-tenant support for multiple organizations
 
-License
-
-This project is licensed under the MIT License.
-
-Author: Nezira Workuali
-GitHub: Jennah198
-```
