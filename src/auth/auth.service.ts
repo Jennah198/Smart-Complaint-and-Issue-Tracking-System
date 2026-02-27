@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UserRole } from '../users/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,11 +20,11 @@ export class AuthService {
         name: dto.name,
         email: dto.email,
         password: hashed,
-        role: dto.role || 'STUDENT',
+        role: dto.role ?? UserRole.STUDENT,
       },
     });
 
-    const token = this.generateToken(user.id, user.role);
+    const token = this.generateToken(user.id, user.role, user.email);
     return { user, token };
   }
 
@@ -36,12 +37,12 @@ export class AuthService {
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
 
-    const token = this.generateToken(user.id, user.role);
+    const token = this.generateToken(user.id, user.role, user.email);
     return { user, token };
   }
 
-  private generateToken(userId: string, role: string) {
-    return this.jwtService.sign({ sub: userId, role });
+  private generateToken(userId: string, role: UserRole, email: string) {
+    return this.jwtService.sign({ sub: userId, role, email });
   }
 
   async createAdmin(email: string, password: string) {
@@ -50,7 +51,7 @@ export class AuthService {
       data: {
         email,
         password: hashed,
-        role: 'ADMIN',
+        role: UserRole.ADMIN,
         name: 'Admin User',
       },
     });
@@ -62,7 +63,7 @@ export class AuthService {
       data: {
         email,
         password: hashed,
-        role: 'STAFF',
+        role: UserRole.STAFF,
         name: 'Staff User',
       },
     });

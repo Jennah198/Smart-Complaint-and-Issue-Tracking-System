@@ -53,92 +53,91 @@ This project uses a modern **MERN/NestJS + Prisma + PostgreSQL stack** with Type
 
 ## Project Structure
 
+```text
 astu-smart-complaint-backend/
 │
 ├── src/
-│ ├── prisma/ # PrismaService & client
-│ ├── auth/ # Authentication module
-│ ├── users/ # User module
-│ ├── complaints/ # Complaint module
-│ ├── notifications/ # Notification module
-│ ├── app.controller.ts # Test and health endpoints
-│ └── main.ts # Application bootstrap
+│   ├── prisma/           # Prisma service wiring & client
+│   ├── auth/             # Authentication module (JWT + guards)
+│   ├── users/            # User roles helpers
+│   ├── complaint/        # Complaint module, DTOs, controllers
+│   ├── app.controller.ts # Health and smoke-test endpoints
+│   └── main.ts           # NestJS bootstrap & validation pipe
 │
 ├── prisma/
-│ ├── schema.prisma # Prisma schema definitions
-│ └── prisma.config.ts # Prisma 7 config with adapter
+│   ├── schema.prisma     # Prisma schema definitions
+│   └── prisma.config.ts  # Prisma 7 config with PrismaPg adapter
 │
-├── .env # Environment variables
-├── tsconfig.json # TypeScript config
+├── test/
+│   └── app.e2e-spec.ts   # Root e2e smoke test
+│
 ├── package.json
+├── tsconfig.json
 └── README.md
+```
 
 ---
 
 ## Environment Variables
 
-Create a `.env` file in the root directory with the following:
+Copy `.env.example` to `.env` and keep the `POSTGRES_*`, `DATABASE_URL`, and `JWT_SECRET` values in sync with your Docker/Postgres setup:
 
 ```env
-DATABASE_URL=postgresql://USERNAME:PASSWORD@localhost:5432/astu_smart_complaint
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=astu_smart_complaint
+POSTGRES_PORT=5432
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/astu_smart_complaint
 PORT=5000
 JWT_SECRET=your_jwt_secret
-Installation & Setup
+```
 
-Clone the repository:
+`PORT` defaults to `3000` when unset, and `JWT_SECRET` falls back to `supersecret` for local/test use only.
 
-git clone https://github.com/Jennah198/Smart-Complaint-and-Issue-Tracking-System.git
-cd astu-smart-complaint-backend
+## Local Database with Docker
 
-Install dependencies:
+`docker compose` boots a Postgres container that matches the defaults used in `.env.example`.
 
-npm install
+1. `docker compose up -d db`
+2. Wait until `docker compose ps` shows `db` is healthy (`docker compose logs db` can be used if it takes longer).
+3. Run `docker compose down` when you are done.
 
-Generate Prisma client:
+Mounts are persisted in `db-data`, so data cycles through restarts automatically.
 
-npx prisma generate
+## Installation & Setup
 
-Run database migrations:
+1. `npm install`
+2. `npx prisma generate`
+3. `npx prisma migrate dev --name init`
+4. `npm run start:dev`
 
-npx prisma migrate dev --name init
+The database adapter expects a running Postgres instance that matches `DATABASE_URL`.
 
-Start the development server:
+## Usage
 
-npm run start:dev
+- Health check: `GET /health`
+- Smoke test: `GET /users-test`
+- Submit complaints: `POST /complaints`
+- Staff/Admin flows: `PATCH /complaints/:id/status` and `GET /complaints` (requires `STAFF`/`ADMIN` roles)
 
-Test endpoints:
+Authenticate with `POST /auth/login`/`POST /auth/register` to receive a JWT.
 
-Health check: http://localhost:5000/health
+## Testing
 
-Users test: http://localhost:5000/users-test
+- `npm test` (Jest) – depends on the Docker Postgres instance running.
+- `npm run test:watch` – for iterative development.
+- `npm run lint` – lints `src`/`test`.
 
-Usage
+## Contribution
 
-Access the API via Postman or frontend application.
+1. Fork the repo and create a feature branch.
+2. Keep Prisma migrations, clients, and TypeScript definitions in sync.
+3. Run `npm test` and `npm run lint` before opening a pull request.
 
-Create users and complaints to test workflows.
+## Future Enhancements
 
-Admin can view analytics dashboards and metrics.
-
-AI chatbot assists students with FAQ and category suggestions.
-
-Contribution
-
-Fork the repo, create a feature branch, commit your changes, and open a pull request.
-
-Ensure all migrations and Prisma clients are up to date.
-
-Use TypeScript and follow NestJS module conventions.
-
-Future Enhancements
-
-Full frontend integration (Next.js + TypeScript)
-
-Real-time notifications (WebSockets)
-
-SLA auto-escalation for unresolved tickets
-
-AI-based complaint categorization improvements
-
-Multi-tenant support for multiple organizations
-
+- Full frontend integration (Next.js + TypeScript)
+- Real-time notifications (WebSockets)
+- SLA auto-escalation for unresolved tickets
+- AI-based complaint categorization improvements
+- Multi-tenant support for multiple organizations
