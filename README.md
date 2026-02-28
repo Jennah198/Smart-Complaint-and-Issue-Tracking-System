@@ -80,29 +80,20 @@ astu-smart-complaint-backend/
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and keep the `POSTGRES_*`, `DATABASE_URL`, and `JWT_SECRET` values in sync with your Docker/Postgres setup:
+Copy `.env.example` to `.env` and update it to point at your local Postgres instance:
 
 ```env
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=astu_smart_complaint
-POSTGRES_PORT=5432
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=astu_smart_complaint
+DB_USER=postgres
+DB_PASSWORD=postgres
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/astu_smart_complaint
 PORT=5000
 JWT_SECRET=your_jwt_secret
 ```
 
-`PORT` defaults to `3000` when unset, and `JWT_SECRET` falls back to `supersecret` for local/test use only.
-
-## Local Database with Docker
-
-`docker compose` boots a Postgres container that matches the defaults used in `.env.example`.
-
-1. `docker compose up -d db`
-2. Wait until `docker compose ps` shows `db` is healthy (`docker compose logs db` can be used if it takes longer).
-3. Run `docker compose down` when you are done.
-
-Mounts are persisted in `db-data`, so data cycles through restarts automatically.
+`DATABASE_URL` must match the values above. `PORT` defaults to `3000` when unset, and `JWT_SECRET` falls back to `supersecret` for local/test use only.
 
 ## Installation & Setup
 
@@ -124,7 +115,7 @@ Authenticate with `POST /auth/login`/`POST /auth/register` to receive a JWT.
 
 ## Testing
 
-- `npm test` (Jest) – depends on the Docker Postgres instance running.
+- `npm test` (Jest) – uses local Postgres connection defined in `DATABASE_URL`.
 - `npm run test:watch` – for iterative development.
 - `npm run lint` – lints `src`/`test`.
 
